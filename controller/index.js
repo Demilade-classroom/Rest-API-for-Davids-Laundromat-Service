@@ -12,7 +12,7 @@ exports.allStaffs = async (req, res) => {
 		const staffs = await Staff.find()
 			.populate('washes', 'washDate washId')
 			.populate('payments', 'payment_date amount payment_mode');
-		if (staffs <= 0) {
+		if (staffs.length <= 0) {
 			return res.status(400).json({
 				message: 'No staff record to display...Register a staff',
 			});
@@ -23,8 +23,9 @@ exports.allStaffs = async (req, res) => {
 			});
 		}
 	} catch (error) {
+		console.log(`Retrieve all staffs error >>> ${error.message}`);
 		return res.status(500).json({
-			message: error.message,
+			message: 'Error in retrieving staffs',
 		});
 	}
 };
@@ -48,59 +49,51 @@ exports.getStaff = async (req, res) => {
 			});
 		}
 	} catch (error) {
+		console.log(`Retrieve staff error >>> ${error.message}`);
 		return res.status(500).json({
-			message: 'Error in getting the user',
-			error: error.message,
+			message: 'Error in getting the staff',
 		});
 	}
 };
 
 //register a Staff / sign-up
-	// you can wrap all these in a try and check for any errors so the user isn't left
-	// hanging
 
 exports.registerStaff = async (req, res) => {
 	const { name, email, password, mobile_num, address } = req.body;
 
 	//get the validation results
 	const errors = validationResult(req);
-
-	if (!errors.isEmpty()) {
-		return res.status(422).json({
-			errors: errors.array(),
-		});
-	}
-
-	//hash the password
-	const salt = await bcrypt.genSalt(10);
-	const hashedPassword = await bcrypt.hash(password, salt);
-
-	//get the date and store it as string in the database
-	const date = new Date();
-	const resumption_date = date.toDateString();
-
-	const newStaff = new Staff({
-		name,
-		email,
-		password: hashedPassword,
-		mobile_num,
-		address,
-		resumption_date,
-	});
-
-	//Generate a token for the staff and save to the 
-	
-	//check for errors here,
-	//this can break and not send errors to the users
-
-	const accesstoken = await jwt.sign(
-		{ _id: newStaff._id },
-		config.SECRET_TOKEN,
-		{ expiresIn: '1d' }
-	);
-	res.header('auth-token', accesstoken);
-
 	try {
+		if (!errors.isEmpty()) {
+			return res.status(422).json({
+				errors: errors.array(),
+			});
+		}
+
+		//hash the password
+		const salt = await bcrypt.genSalt(10);
+		const hashedPassword = await bcrypt.hash(password, salt);
+
+		//get the date and store it as string in the database
+		const date = new Date();
+		const resumption_date = date.toDateString();
+
+		const newStaff = new Staff({
+			name,
+			email,
+			password: hashedPassword,
+			mobile_num,
+			address,
+			resumption_date,
+		});
+
+		//Generate a token for the staff and save to the database
+		const accesstoken = await jwt.sign(
+			{ _id: newStaff._id },
+			config.SECRET_TOKEN,
+			{ expiresIn: '1d' }
+		);
+
 		const staffDoc = await newStaff.save();
 		if (staffDoc) {
 			return res.status(201).json({
@@ -110,9 +103,9 @@ exports.registerStaff = async (req, res) => {
 			});
 		}
 	} catch (error) {
+		console.error(`User sign up error >>> ${error.message}`);
 		res.status(500).json({
 			message: 'Error in creating staff',
-			error: error.message,
 		});
 	}
 };
@@ -143,7 +136,6 @@ exports.signInStaff = async (req, res) => {
 			config.SECRET_TOKEN,
 			{ expiresIn: '1d' }
 		);
-		res.header('auth-token', accesstoken);
 
 		return res.status(200).json({
 			message: 'Staff signed in successfully',
@@ -151,6 +143,7 @@ exports.signInStaff = async (req, res) => {
 			accesstoken,
 		});
 	} catch (error) {
+		console.error(`User sign in error >>> ${error.message}`);
 		res.status(500).json({
 			message: 'Error in signing staff in',
 			error: error.message,
@@ -178,9 +171,9 @@ exports.updateStaff = async (req, res) => {
 			});
 		}
 	} catch (error) {
+		console.log(`Staff update error >>> ${error.message}`);
 		res.status(500).json({
 			message: 'Error in updating staff',
-			error: error.message,
 		});
 	}
 };
@@ -203,9 +196,9 @@ exports.removeStaff = async (req, res) => {
 			});
 		}
 	} catch (error) {
+		console.log(`Staff delete error >>> ${error.message}`);
 		return res.status(500).json({
 			message: 'Error in deleting staff',
-			error: error.message,
 		});
 	}
 };
@@ -220,9 +213,9 @@ exports.removeAllStaffs = async (req, res) => {
 			});
 		}
 	} catch (error) {
+		console.log(`Staffs delete error >>> ${error.message}`);
 		res.status(500).json({
 			message: 'Error in deleting staffs',
-			Error: error.message,
 		});
 	}
 };

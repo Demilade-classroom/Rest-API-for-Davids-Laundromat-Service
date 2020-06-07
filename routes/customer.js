@@ -1,5 +1,6 @@
 const customerRoutes = require('express').Router();
-const { check } = require('express-validator');
+const { check, body } = require('express-validator');
+const Customer = require('../models/index').Customer;
 
 //controllers
 const {
@@ -20,6 +21,15 @@ const validateCustomer = [
 		.matches(/^[+-\d]+$/)
 		.withMessage('Mobile Number must be a valid Nigerian number'),
 	check('address', 'Address is empty').notEmpty(),
+	body('email').custom((value) => {
+		return Customer.findOne({ email: value }).then((customer) => {
+			if (customer) {
+				return Promise.reject(
+					'Customer with the same email as been registered... try another email or update existing customer'
+				);
+			}
+		});
+	}),
 ];
 
 //register a new customer

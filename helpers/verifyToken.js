@@ -5,23 +5,35 @@ const models = require('../models/index');
 const Staff = models.Staff;
 
 exports.verifyToken = (req, res, next) => {
+	//check if the token is needed for the route being accessed
 	if (!routes.unsecureRoutes.includes(req.path)) {
-		const token = req.header('auth-token');
-		if (!token) {
-			return res.status(401).json({
-				message: 'Access denied!!! Please sign up or sign in',
+		const authHeader = req.headers['authorization'];
+		let token;
+
+		if (!authHeader) {
+			return res.status(412).json({
+				message: 'Access denied!!! Missing credentials',
 			});
+		}
+
+		//separate the Bearer from the string if it exists
+		const separateBearer = authHeader.split(' ');
+		if (separateBearer.includes('Bearer')) {
+			token = separateBearer[1];
 		} else {
-			try {
-				const grantAccess = jwt.verify(token, config.SECRET_TOKEN);
-				req.staff = grantAccess;
-				next();
-				return;
-			} catch (error) {
-				return res.status(403).json({
-					message: 'Invalid token!!!',
-				});
-			}
+			token = authHeader;
+		}
+
+		try {
+			const grantAccess = jwt.verify(token, config.SECRET_TOKEN);
+			req.staff = grantAccess;
+			next();
+			return;
+		} catch (error) {
+			console.log(`JWT verification error >>> ${error.message}`);
+			res.status(403).json({
+				message: 'Something went wrong. Please try again..',
+			});
 		}
 	} else {
 		next();

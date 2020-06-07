@@ -54,7 +54,7 @@ indexRouter.post('/signup', validateRegister, registerStaff);
 indexRouter.post('/signin', validateLogin, signInStaff);
 
 //signout staff
-indexRouter.get('/signout', signOutStaff);
+//indexRouter.get('/signout', signOutStaff);
 
 //get all staffs
 indexRouter.get('/all', allStaffs);

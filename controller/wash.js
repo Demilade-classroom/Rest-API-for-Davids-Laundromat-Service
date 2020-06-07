@@ -22,9 +22,9 @@ exports.allWashes = async (req, res) => {
 			});
 		}
 	} catch (error) {
+		console.log(`Retrieve all washes error >>> ${error.message}`);
 		return res.status(500).json({
 			message: 'Error in getting wash records',
-			Error: error.message,
 		});
 	}
 };
@@ -46,9 +46,9 @@ exports.getWash = async (req, res) => {
 			});
 		}
 	} catch (error) {
+		console.log(`Retrieve wash error >>> ${error.message}`);
 		return res.status(500).json({
 			message: 'Error in getting wash record',
-			error: error.message,
 		});
 	}
 };
@@ -81,9 +81,9 @@ exports.getWashByDlsId = async (req, res) => {
 			wash: wash,
 		});
 	} catch (error) {
+		console.log(`Retrieve wash error >>> ${error.message}`);
 		return res.status(500).json({
 			message: 'Error in getting the wash',
-			error: error.message,
 		});
 	}
 };
@@ -92,39 +92,38 @@ exports.getWashByDlsId = async (req, res) => {
 exports.newWash = async (req, res) => {
 	const { customer_name, number_of_wash, amount } = req.body;
 	const id = req.staff._id;
-
-	//get the validation results
-	const errors = validationResult(req);
-
-	if (!errors.isEmpty()) {
-		return res.status(422).json({
-			errors: errors.array(),
-		});
-	}
-
-	const name = customer_name.toLowerCase();
-
-	//get the customer doc
-	const customerDoc = await Customer.findOne({
-		customer_name: name,
-	});
-	if (!customerDoc)
-		return res.status(400).json({
-			message: 'No customer with such name, register the customer first',
-		});
-
-	const date = new Date();
-	const washDate = date.toISOString();
-	const modifiedAmount = `\u20A6${amount.toString()}`;
-
-	const wash = new Wash({
-		customer_name: name,
-		washDate,
-		number_of_wash,
-		amount: modifiedAmount,
-	});
-
 	try {
+		//get the validation results
+		const errors = validationResult(req);
+
+		if (!errors.isEmpty()) {
+			return res.status(422).json({
+				errors: errors.array(),
+			});
+		}
+
+		const name = customer_name.toLowerCase();
+
+		//get the customer doc
+		const customerDoc = await Customer.findOne({
+			customer_name: name,
+		});
+		if (!customerDoc)
+			return res.status(400).json({
+				message: 'No customer with such name, register the customer first',
+			});
+
+		const date = new Date();
+		const washDate = date.toISOString();
+		const modifiedAmount = `\u20A6${amount.toString()}`;
+
+		const wash = new Wash({
+			customer_name: name,
+			washDate,
+			number_of_wash,
+			amount: modifiedAmount,
+		});
+
 		//save the wash to the databsase then start updating necessary info
 		const washDoc = await wash.save();
 		if (washDoc) {
@@ -152,8 +151,9 @@ exports.newWash = async (req, res) => {
 			});
 		}
 	} catch (error) {
+		console.log(`Record wash error >>> ${error.message}`);
 		res.status(500).json({
-			message: error.message,
+			message: 'Error in recording wash',
 		});
 	}
 };
@@ -175,9 +175,9 @@ exports.deleteWash = async (req, res) => {
 			});
 		}
 	} catch (error) {
+		console.log(`Delete wash error >>> ${error.message}`);
 		return res.status(500).json({
 			message: 'Error in deleting wash record',
-			error: error.message,
 		});
 	}
 };
@@ -192,9 +192,9 @@ exports.removeAllWashes = async (req, res) => {
 			});
 		}
 	} catch (error) {
+		console.log(`Delete washes error >>> ${error.message}`);
 		res.status(500).json({
 			message: 'Error in deleting washes',
-			Error: error.message,
 		});
 	}
 };

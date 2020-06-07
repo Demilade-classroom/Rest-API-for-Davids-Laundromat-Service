@@ -5,5 +5,5 @@ module.exports = {
 	ENV: process.env.NODE_ENV || 'development',
 	SECRET_TOKEN: process.env.JWT_SECRET,
 	MONGODB_URI:
-		process.env.MONGOURI || 'mongodb://127.0.0.1:27017/DavidsLaundromatService',
+		process.env.MONGOURI || 'mongodb://localhost:27017/DavidsLaundromatService',
 };

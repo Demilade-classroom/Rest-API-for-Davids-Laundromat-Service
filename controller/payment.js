@@ -22,9 +22,9 @@ exports.getPayments = async (req, res) => {
 			});
 		}
 	} catch (error) {
+		console.log(`Retrieve all payments error >>> ${error.message}`);
 		return res.status(500).json({
 			message: 'Error in getting payments',
-			error: error.message,
 		});
 	}
 };
@@ -43,9 +43,9 @@ exports.getPaymentById = async (req, res) => {
 			return res.status(200).json({ message: 'Found payment', payment });
 		}
 	} catch (error) {
+		console.log(`Retrieve payment error >>> ${error.message}`);
 		return res.status(500).json({
 			error: 'Error in getting payment',
-			error: error.message,
 		});
 	}
 };
@@ -137,9 +137,9 @@ exports.newPayment = async (req, res) => {
 			});
 		}
 	} catch (error) {
+		console.log(`Record payment error >>> ${error.message}`);
 		return res.status(500).json({
 			message: 'error in recording payment',
-			error: error.message,
 		});
 	}
 };
@@ -163,9 +163,9 @@ exports.deletePaymentById = async (req, res) => {
 			});
 		}
 	} catch (error) {
+		console.log(`Delete payment error >>> ${error.message}`);
 		res.status(500).json({
 			message: 'Error in deleting payment',
-			error: error.message,
 		});
 	}
 };
@@ -179,9 +179,9 @@ exports.deleteAllPayments = async (req, res) => {
 			message: `${deletedPayments.deletedCount} payment(s) has/have been deleted`,
 		});
 	} catch (error) {
+		console.log(`Payments delete error >>> ${error.message}`);
 		res.status(500).json({
 			message: 'Error in deleting payments',
-			error: error.message,
 		});
 	}
 };
