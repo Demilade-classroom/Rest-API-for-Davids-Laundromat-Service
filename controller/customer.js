@@ -19,8 +19,9 @@ exports.getAll = async (req, res) => {
 			});
 		}
 	} catch (error) {
+		console.log(`Retrieve all customers error >>> ${error.message}`);
 		return res.status(500).json({
-			message: error.message,
+			message: 'Error in getting customer',
 		});
 	}
 };
@@ -28,41 +29,33 @@ exports.getAll = async (req, res) => {
 exports.register = async (req, res) => {
 	const { customer_name, email, mobile_num, address } = req.body;
 
-	//get the validation results
 	const errors = validationResult(req);
 
-	if (!errors.isEmpty()) {
-		return res.status(422).json({
-			errors: errors.array(),
-		});
-	}
-
-	///check if a customer email has been registered before
-	const found = await Customer.findOne({ email: email });
-	if (found)
-		return res.status(422).json({
-			message:
-				'Customer with the same email as been registered... try another email or update existing customer',
-		});
-
-	const name = customer_name.toLowerCase();
-	const user = new Customer({
-		customer_name: name,
-		email,
-		mobile_num,
-		address,
-	});
-
 	try {
+		//get the validation results
+		if (!errors.isEmpty()) {
+			return res.status(422).json({
+				errors: errors.array(),
+			});
+		}
+
+		const name = customer_name.toLowerCase();
+		const user = new Customer({
+			customer_name: name,
+			email,
+			mobile_num,
+			address,
+		});
+
 		const newCustomer = await user.save();
 		res.status(201).json({
 			message: 'Successfully created a new Customer',
 			customer: newCustomer,
 		});
 	} catch (error) {
+		console.log(`Customer's signup error >>> ${error.message}`);
 		res.status(500).json({
 			message: 'Error in creating user!',
-			error: error.message,
 		});
 	}
 };
@@ -82,12 +75,13 @@ exports.getOne = async (req, res) => {
 		} else {
 			return res.status(200).json({
 				message: 'Found customer',
-				customer: customer,
+				customer,
 			});
 		}
 	} catch (error) {
+		console.log(`Retrieve all customer error >>> ${error.message}`);
 		return res.status(500).json({
-			message: error.message,
+			message: `Error in geting customer's data`,
 		});
 	}
 };
@@ -108,9 +102,9 @@ exports.updateOne = async (req, res) => {
 			});
 		}
 	} catch (error) {
+		console.log(`Update customer error >>> ${error.message}`);
 		res.status(500).json({
 			message: 'Error in updating the user',
-			error: error.message,
 		});
 	}
 };
@@ -128,9 +122,9 @@ exports.deleteOne = async (req, res) => {
 			});
 		}
 	} catch (error) {
+		console.log(`Delete customer error >>> ${error.message}`);
 		res.status(500).json({
 			message: 'Error in deleting the customer',
-			error: error.message,
 		});
 	}
 };
@@ -145,9 +139,9 @@ exports.deleteAll = async (req, res) => {
 			});
 		}
 	} catch (error) {
+		console.log(`Delete customers error >>> ${error.message}`);
 		res.status(500).json({
 			message: 'Error in deleting the customers',
-			error: error.message,
 		});
 	}
 };

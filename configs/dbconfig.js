@@ -15,7 +15,7 @@ const dbConnection = () => {
 			console.log('Successfully connected to the database');
 		})
 		.catch((err) => {
-			console.error(" db connect error >>> ", err.message);
+			console.error(' db connect error >>> ', err.message);
 		});
 };
 
